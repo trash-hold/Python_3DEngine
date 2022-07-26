@@ -9,6 +9,10 @@ Engine to do:
     3. Projection
     4. Picture scalling and fixing 
 
+    5. Read up about gimbal lock
+    6. Make matlab model of rotatiton transformation to check understanding
+
+
 Progess day 1:
     - found translation for moving CS by vector 
     - looking for rotation deriviation
@@ -23,3 +27,6 @@ Progress day 3:
 Proggess day 4:
     - worked on class structure
     - started rasterization methods
+
+Day 5:
+    - something is off with rotation
