@@ -28,5 +28,7 @@ Proggess day 4:
     - worked on class structure
     - started rasterization methods
 
-Day 5:
+Day 5 + 6:
     - something is off with rotation
+    Found out that the rotations I look for are theta and psi (gotta look into that though).
+    While testing on triangle points A(300, 0, 0), B(-300, 0, 0), C(0, 300, 0) after transformation by psi(10) got weird z cordinate of point C_z = -52
