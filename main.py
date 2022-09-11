@@ -24,10 +24,10 @@ class Camera:
                         [0, -m.sin(rot[2]), m.cos(rot[2])]])
     
         #rot_mat = np.dot(rot_psi, np.dot(rot_theta, rot_phi))
-        rot_mat = np.dot(rot_theta, rot_phi)
+        rot_mat = np.dot(rot_phi, rot_theta)
         print(rot_mat)
 
-        return np.dot(rot_mat, obj)
+        return np.dot(obj.T, rot_mat).T
     
     def camera_cs(self, trans_mat):
         """
@@ -89,14 +89,47 @@ class Renderer:
                 else:
                     new_obj = np.array([[x, m.sqrt(dim[0]*dim[0] - x*x), dim[1]], [x, -m.sqrt(dim[0]*dim[0] - x*x), dim[1]]])
                     obj = np.vstack([obj, new_obj])
-        #print(self.__render__)
+        
+        #obj = np.array([[300,0,0], [-300,0,0], [0, 300, 0]])
+
         self.__render__ = np.vstack([self.__render__, obj])
+        print(self.__render__)
+
+        #testing rotation at origin
+        rot = np.array([m.radians(0), m.radians(0), m.radians(10)])
+        rot_phi = np.array([[m.cos(rot[0]), m.sin(rot[0]), 0],
+                        [-m.sin(rot[0]), m.cos(rot[0]), 0],
+                        [0, 0, 1]])
+
+        rot_theta = np.array([[m.cos(rot[1]), 0 , -m.sin(rot[1])],
+                        [0, 1, 0],
+                        [m.sin(rot[1]), 0, m.cos(rot[1])]])
+        
+        rot_psi = np.array([[1, 0, 0],
+                        [0, m.cos(rot[2]), m.sin(rot[2])],
+                        [0, -m.sin(rot[2]), m.cos(rot[2])]])
+
+        rot_mat = np.dot(rot_phi, np.dot(rot_theta, rot_psi))
+        print("Rotation matrix")
+        print(rot_mat)
+
+        print("Before rotation:")
+        print(self.__render__)
+        self.__render__ = np.dot((self.__render__), rot_mat)
+
+        print("After rotation:")
+        print(self.__render__)
+
+        print("Trying to include whole of the object")
+        min_z = np.amin(self.__render__, axis = 0)[2]
+        self.__render__ = self.__render__ - np.array([0, 0, min_z + 1])
+
 
     def render(self):
         # # $ & @ %
         max_z = np.amax(self.__render__, axis = 0)[2]
-        buffer_size = max_z // 5 + 1
-        sym = {0: "@", 1: "@", 2: "#", 3: "&", 4: "%", 5: "$"}
+        buffer_size = max_z // 7 + 1
+        sym = {0: "!", 1: "@", 2: "#", 3: "&", 4: "%", 5: "$", 6: "."}
 
         #creating map
         mapping = {(x, y): [] for x in range(int(self.__size__[0])) for y in range(int(self.__size__[0]))}
@@ -136,21 +169,22 @@ if __name__ == "__main__":
 
     #mat = np.random.randint(10, size = (3, 20))
     #mat = np.array([[4, 4, 4, 4],[4, 4, 4, 4],[3, 8, 7, 1]])
-    mat = np.array([[0],[0],[1]])
+    #mat = np.array([[20, 40, 50],[0, 20, -10],[1, 1, 1]])
+    mat = np.array([0, 0, 0])
     #print("The random matrix:")
     #print(mat)
     t = np.zeros(shape = (2, 3))
-    par = np.array([[-10], [0], [-1]])
-    rot = np.array([m.radians(0), m.radians(4), m.radians(0)])
+    par = np.array([[0], [0], [-10]])
+    rot = np.array([m.radians(0), m.radians(0), m.radians(0)])
     trans = np.column_stack((par, rot))
-    cam = Camera(mat, t)
+    cam = Camera(par, t)
 
     #print(cam.__obj__)
     w_size = np.array([[60], [60], [1]])
     cam.rasterization(w_size)
     
     red = Renderer(mat.T, w_size)
-    red.draw("circle", par, [50, 4])
+    red.draw("circle", par, [300, 0])
     red.update_renderer(cam, None, trans)
     #print(100*"# ")
     #for i in range(100): print("#")
