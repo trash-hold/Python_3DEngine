@@ -7,6 +7,8 @@ __frame_size__ = 100
 class Camera(Window, Shape):
     def __init__(self, p):
         super().__init__(p.__wsize__[0], p.__wsize__[1], p.__rules__, p.__shapes__, p.__obj__, True)
+        self.__wcs__ = self.__obj__
+        self.__origin__ = np.array([0, 0, 0])
     
     def cs_transform(self, trans_mat):
         """
@@ -29,9 +31,15 @@ class Camera(Window, Shape):
         ras_v = np.array([[__frame_size__/2], [-__frame_size__/2], [0]])
         matrix = self.processing("a")
 
-        vec_z = matrix[2]
-        matrix[0] = matrix[0]/vec_z
-        matrix[1] = matrix[1]/vec_z
+        if self.__rules__["z_red"]:
+            vec_z = matrix[2]
+            matrix[0] = matrix[0]/vec_z
+            matrix[1] = matrix[1]/vec_z
+        else:
+            scale = self.find_max(matrix)*2/__frame_size__
+            padding = 0.8
+            matrix[0] = matrix[0]*padding/scale
+            matrix[1] = matrix[1]*padding/scale
 
         matrix = self.processing("c", matrix.T)
 
@@ -48,7 +56,6 @@ class Camera(Window, Shape):
         ras = np.rint(((self.projection().T)/ndc_v) * w_size.T)
         
         #Cutting off all points not visible to camera 
-        print(ras)
         ras_reduced = np.delete(ras, np.where(
             (ras[:, 0] < 0) | (ras[:, 0] >= w_size[0]) | (ras[:, 1] < 0) | (ras[:, 1] >= w_size[1]))[0], axis = 0)
         
@@ -79,11 +86,22 @@ class Camera(Window, Shape):
             matrix = matrix - diff.T
 
         return matrix.T
-            
 
-    def update_cam(self, trans_mat, obj = None, w_size = None):
+    def find_max(self, matrix = None):
+        if matrix is None: matrix = self.__obj__
+        max = 1
+
+        min_vec = np.absolute(np.amin(matrix, 1))
+        max_vec = np.absolute(np.amax(matrix, 1))
+
+        for i in range(2):
+            if min_vec[i] > max_vec[i]:
+                if max < min_vec[i]: max = min_vec[i]
+            else:
+                if max < max_vec[i]: max = max_vec[i]
+
+        return max           
+
+    def update_cam(self, obj = None, w_size = None):
         if obj is not None: self.__obj__ = obj
         if w_size is None: w_size = self.__wsize__
-
-        self.__obj__ = self.cs_transform(trans_mat)
-        self.__obj__ = self.rasterization(w_size)

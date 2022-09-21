@@ -1,10 +1,23 @@
 import numpy as np
 
+from os import name, system
+from time import sleep
+
+
 class Renderer:
     def __init__(self, p):
+        self.__camera__ = p
         self.__render__ = p.__obj__
         self.__size__ = p.__wsize__
         self.__map__ = {(x, y): [] for x in range(int(self.__size__[0])) for y in range(int(self.__size__[1]))}
+        self.__refresh_rate__ = 0.005
+
+    
+    def render(self):
+        self.__camera__.rasterization()
+        self.__render__ = self.__camera__.__obj__
+        if self.mapping():
+            self.terminal_print()
 
     def mapping(self):
         # # $ & @ %
@@ -15,7 +28,7 @@ class Renderer:
         sym = {0: "@", 1: "#", 2: "%", 3: "&", 4: "$", 5: "!", 6: "."}
 
         #creating map
-        mapping = self.__map__
+        mapping = {(x, y): [] for x in range(int(self.__size__[0])) for y in range(int(self.__size__[1]))}
         for i in self.__render__:
             mapping[(i[0], i[1])].append(i[2])
         
@@ -39,7 +52,20 @@ class Renderer:
             print(x + "|")
         print(" " + "--" * int(self.__size__[0]))
 
+    def animate(self):
+        cam = self.__camera__
+        for i in range(-180, 180, 2):
+            self.render()
+            #sleep(self.__refresh_rate__)
+            self.clear()
+            cam.update_cam(cam.__wcs__)
+            cam.rotate([0, i, i], True)
 
-    def render(self):
-        if self.mapping():
-            self.terminal_print()
+    def clear(self):
+        # for windows
+        if name == 'nt':
+            _ = system('cls')
+    
+        # for mac and linux(here, os.name is 'posix')
+        else:
+            _ = system('clear')
