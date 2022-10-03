@@ -4,6 +4,7 @@ from time import sleep
 
 from engine import *
 from gui.menu import Menu
+import gui.styles as s
 
 """
 Functions of GUI:
@@ -21,16 +22,22 @@ class GUI:
         self.ren = Renderer(self.cam)
 
         self.root = tk.Tk()
-        self.root.eval('tk::PlaceWindow . center')
 
         self.root.geometry("1080x720")
         self.root.minsize(480, 640)
-        self.root.configure(bg = "#292929")
+        self.root.tk_setPalette(
+            background = s.background_theme, 
+            foreground = s.main_theme
+        )
+        self.root.option_add("*Font", "Terminal")
+        #self.root.configure(bg = "#292929")
+        self.root.wm_attributes("-transparentcolor", s.trans )
 
         self.frames = []
         self.frames.append(Menu(self))
 
-        self.frames[0].pack(fill = tk.BOTH, expand = True, padx = 90, pady = (40,60))
+        #self.frames[0].pack(fill = tk.BOTH, expand = True, padx = 90, pady = (40,60))
+        self.frames[0].pack(fill = tk.BOTH, expand = True)
 
         #self.root.bind('<Configure>', self.update_res)
 
