@@ -3,12 +3,13 @@ import tkinter as tk
 min_value = 20
 max_value = 1000
 
-
+trans = "#B00B15"
 bloody_red = "#A42929"
 light_green = "#27BB73"
 jet = "#292929"
 jet_black = "#161616"
 light_gray = "#4F4F4F"
+gray = "#424242"
 hacker_green = "#0D8E50"
 dark_green = "#066235"
 
@@ -19,11 +20,15 @@ shadow_back = jet_black
 highlight_bg = light_green
 highlight_fg = light_gray
 
-
 button_style = ("Terminal", 20)
 entry_style = ("Terminal", 20)
 label_style = ("Consolas", 7)
-setting_label = ("Terminal", 30)
+setting_label = ("Terminal", 20)
+big_label = ("Terminal", 40)
+
+labels_height = [button_style, entry_style, setting_label, big_label]
+labels_width = [label_style]
+
 
 class MenuButton(tk.Button):
     def __init__(self, *args, **kwargs):
@@ -54,6 +59,12 @@ class MenuLabel(tk.Label):
         self['font'] = label_style
         self['justify'] = tk.LEFT
 
+class BigLabel(tk.Label):
+    def __init__(self, *args, **kwargs):
+        tk.Label.__init__(self, *args, **kwargs)
+        self['font'] = big_label
+        self['justify'] = tk.CENTER
+
 class SettEntry(tk.Entry):
     def __init__(self, *args, **kwargs):
         tk.Entry.__init__(self, *args, **kwargs)
@@ -62,39 +73,78 @@ class SettEntry(tk.Entry):
         self['fg'] = background_theme
         self['font'] = entry_style
         self['justify'] = tk.CENTER
-        self['relief'] = tk.RIDGE
+        self['relief'] = tk.FLAT
+
+class OFButton(tk.Frame):
+    def __init__(self, label = "Label", mode = True, *args, **kwargs):
+        tk.Frame.__init__(self, *args, **kwargs)
+        self.mode = tk.BooleanVar(value = mode)
+        self.img_on = tk.PhotoImage(file = "gui/src/check_on.png")
+        self.img_off = tk.PhotoImage(file = "gui/src/check_off.png")
+        self.img = None
+        
+        if mode: self.img = self.img_on
+        else: self.img = self.img_off
+
+        self.b = tk.Button(self, image = self.img, command = self.switch, relief = tk.FLAT, activebackground = shadow_main)
+        l = tk.Label(self, text = label)
+
+        self.b.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 40), pady = 10)
+        l.pack(side = tk.LEFT, fill = tk.X, padx = (30, 150), pady = 20)
+
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
 
 
-class ValueSetting(tk.Canvas):
+    def switch(self):
+        if self.mode.get():
+            self.b.configure(image = self.img_off)
+            self.mode.set(False)
+        else:
+            self.b.configure(image = self.img_on)
+            self.mode.set(True)
+
+    def on_enter(self, event):
+        for i in self.winfo_children():
+            i.configure(bg = gray)
+        self.configure(bg = gray)
+    
+    def on_leave(self, event):
+        for i in self.winfo_children():
+            i.configure(bg = background_theme)
+        self.configure(bg = background_theme)
+
+
+
+class ValueSetting(tk.Frame):
     def __init__(self, label = "Label text", entry = "Entry text", *args, **kwargs):
-        tk.Canvas.__init__(self, *args, **kwargs)
+        tk.Frame.__init__(self, *args, **kwargs)
         self.var = tk.StringVar()
         self.default = entry 
         self.var.set(self.default)
 
-        l = MenuLabel(self, text = label)
-        l.configure(font = setting_label, bg = bloody_red)
+        l = tk.Label(self, text = label)
+        #l.configure(font = setting_label)
         button_frame = tk.Frame(self)
+        self.wid_active = [l, button_frame, self]
 
         self.ent = SettEntry(button_frame, textvariable = self.var)
         vcm = self.register(self.check)
         ivcm = self.register(self.failed_check)
         self.ent.config(validate = "key", validatecommand = (vcm, "%P")) 
 
-        b1 = MenuButton(button_frame, text = "<", command = lambda: self.increment(False))
-        b2 = MenuButton(button_frame, text = ">", command = lambda: self.increment())
+        b1 = MenuButton(button_frame, text = "-", command = lambda: self.increment(False))
+        b2 = MenuButton(button_frame, text = "+", command = lambda: self.increment())
 
         widgets = [b1, self.ent, b2]
         for i in widgets:
-            i.pack(side = tk.LEFT, padx = (0, 10), fill = tk.Y, pady = 20)
+            i.pack(side = tk.LEFT, padx = (0, 0), fill = tk.Y, pady = 20)
 
-        l.pack(side = tk.LEFT, fill = tk.BOTH, padx = (0, 50))
-        button_frame.pack(side = tk.RIGHT)
+        button_frame.pack(side = tk.RIGHT, padx = (0, 15))
+        l.pack(side = tk.LEFT, fill = tk.BOTH, padx = (30, 150))
 
-        """self.grid_columnconfigure(0, weight = 2)
-        self.grid_columnconfigure(0, weight = 1)
-        l.grid(row = 0, column = 0, sticky = "E")
-        button_frame.grid(row = 0, column = 1, sticky = "E", pady = 10)"""
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
 
     def increment(self, incr = True):
         inc = 10
@@ -120,11 +170,25 @@ class ValueSetting(tk.Canvas):
         
         else: val = int(self.default)
 
-    def change_var(self, val):
-        self.var.set(val)
+    def on_enter(self, event):
+        for i in self.wid_active:
+            i.configure(bg = gray)
+    
+    def on_leave(self, event):
+        for i in self.wid_active:
+            i.configure(bg = background_theme)
 
     
-
+def resize_info(font, win, big_label = False):
+    default = 720 if big_label else 1080
+    step = 50 if big_label else 200
+    print("New win: " + str(win))
+    min_height = 20 if big_label else 7
+    #if big_label:
+    if default >= win: return (font, min_height)
+    else:
+        print(min_height + (win - default) // step)
+        return (font, min_height + (win - default) // step)
 
 menu_banner = """                                                                                                                                                                             
                  8 888888888o.   8 8888888888            .8.          8 8888                 8 8888888888   b.             8     ,o888888o.     8 8888  8 8888 b.             8 8 88888888888888   
