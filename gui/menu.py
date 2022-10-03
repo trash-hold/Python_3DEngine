@@ -1,3 +1,4 @@
+from ctypes import alignment
 import tkinter as tk
 import gui.styles as s
 
@@ -7,15 +8,9 @@ class Menu(tk.Frame):
         self.gui = gui
         self.root = gui.root
 
-        self.x = 0
-        self.y = 0
-
-        self.menu_frame()
+        self.settings_frame()
         self.bind("<Configure>", self.resize)
 
-    def resize(self, event):
-        self.x = self.root.winfo_width()
-        self.y = self.root.winfo_height()
 
     def menu_frame(self):
         self.reset()
@@ -46,18 +41,67 @@ class Menu(tk.Frame):
 
     def settings_frame(self):
         self.reset()
-        self.configure(bg = s.bloody_red)
 
+        top_frame = tk.Frame(self)
+        self.sett_frame = tk.Frame(self)
+
+
+        #Creating top_frame widgets
+        sett = s.BigLabel(top_frame, text = "Settings")
+        sett.configure(bg = s.main_theme, fg = s.background_theme, pady = 10)
+        exit = s.MenuButton(top_frame, text = "<")
+        exit.configure(relief = tk.FLAT, padx = 20, command = self.menu_frame)
+
+        #Packing top_frame
+        exit.pack(side = tk.LEFT, padx = (0, 10), fill = tk.Y)
+        sett.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
+
+        #Creating settings_frame widgets
+        f_size = s.ValueSetting("Frame size", "60", self.sett_frame)
+        w_size = s.ValueSetting("Window size", "60", self.sett_frame)
+        butt = s.OFButton("test", True, self.sett_frame)
+
+        #Packing settings_frame 
+        f_size.pack(fill = tk.X, pady = 10)
+        w_size.pack(fill = tk.X, pady = 10)
+        butt.pack(fill = tk.X, pady = 10)
         
 
-        b1 = s.MenuButton(self, text = "What you looking at?", command = self.menu_frame)
-        b1.pack()
+        #Packing into main frame
+        top_frame.pack(side = tk.TOP, fill = tk.X)
+        self.sett_frame.pack(fill = tk.Y, pady = 20, expand = False)
 
     def freemode_frame(self):
         pass
 
+    
+    def resize(self, event):
+        new_x = self.root.winfo_width() 
+        new_y = self.root.winfo_height()
+        
+        print("start")
+        self.frame_resize(self, [new_x, new_y])
+            
+
+    def frame_resize(self, frame, delta):
+        i_info = None
+        for i in frame.winfo_children():
+            print(type(i))
+            if isinstance(i, (tk.Frame, s.OFButton, s.ValueSetting)): 
+                self.frame_resize(i, delta)
+            else: 
+                i_info = i.cget('font').split(" ")
+                if isinstance(i, s.MenuLabel): 
+                    new_label = s.resize_info(i_info[0], delta[0])
+                else:
+                    new_label = s.resize_info(i_info[0], delta[1], True)
+                i.configure(font = new_label)
+            
+            #print("finished that widget")
+        #print("finished everything")
+
     def reset(self):
-        self.configure(bg = "#292929")
+        self.configure(bg = s.background_theme)
         for widget in self.winfo_children():
             widget.destroy()
 
