@@ -14,7 +14,6 @@ class Menu(tk.Frame):
         self.menu_frame()
         self.bind("<Configure>", self.resize)
 
-
     def menu_frame(self) -> None:
         '''
         Initializes menu frame
@@ -30,7 +29,7 @@ class Menu(tk.Frame):
         #Creating buttons and labels          
         l1 = s.MenuLabel(self, text = s.menu_banner)
 
-        b1 = s.MenuButton(self, text = "Spin me!", command = self.gui.donut)
+        b1 = s.MenuButton(self, text = "Spin me!", command=lambda: self.gui.change_frame('Animation'))
         b2 = s.MenuButton(self, text = "Freemode", command = self.freemode_frame)
         b3 = s.MenuButton(self, text = "Settings", command = self.settings_frame)
         b4 = s.MenuButton(self, text = "Exit", command = self.close_win)
@@ -48,6 +47,7 @@ class Menu(tk.Frame):
 
             #self.grid_rowconfigure(counter, weight = 1)
             counter += 1
+
 
     def settings_frame(self) -> None:
         '''
@@ -95,7 +95,6 @@ class Menu(tk.Frame):
         new_x = self.root.winfo_width() 
         new_y = self.root.winfo_height()
         
-        print("start")
         self.frame_resize(self, [new_x, new_y])
             
 
