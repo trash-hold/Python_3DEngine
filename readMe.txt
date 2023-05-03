@@ -44,3 +44,19 @@ Day 5 + 6:
 
 Day ???:
     - First render of spinning donut!!!
+
+
+Day ??? + few months:
+    To do:
+        - Add widget menu to animation
+        - Add animation to styles
+        - Add comments to all files:
+            - GUI 
+            - Menu
+            - styles
+            - main
+            - camera
+            - Renderer
+            - shapes
+            - window
+        - Reupload nice graphics instead of check off and on

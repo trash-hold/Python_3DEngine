@@ -64,12 +64,69 @@ class Circle(Shape):
         #Function draws around (0, 0, 0) point and then moves figure to the right origin point 
         self.__obj__ = obj + self.__origin__
 
+class Square(Shape):
+    def __init__(self, dim, angles = [0, 0, 0], origin = np.array([0, 0, 0])):
+        self.__angles__ = angles
+        super().__init__(dim, origin)
+    
+    def draw(self):
+        #First and only dim is side length A
+        if len(self.__dim__) != 1: raise ValueError("ErrV5: Not enough data to draw figure")
+        if self.__origin__.shape[0] != 3: raise ValueError("ErrV6: Invalid origin coordinates") 
+
+        obj = None
+        dim = self.__dim__
+
+        for a in range(0, dim[0]):
+            for b in range(0, dim[0]):
+                vec = np.array([a, b, 0])
+                if obj is None:
+                    obj = vec
+                else: 
+                    obj = np.vstack([obj, vec])
+        self.__obj__ = obj
+        self.rotate(self.__angles__)
+        self.move(self.__origin__)
+
+class Cube(Shape):
+    def __init__(self, dim, origin = np.array([0, 0, 0])):
+        super().__init__(dim, origin)
+    
+    def draw(self):
+        #First and only dim is side length A
+        if len(self.__dim__) != 1: raise ValueError("ErrV5: Not enough data to draw figure")
+        if self.__origin__.shape[0] != 3: raise ValueError("ErrV6: Invalid origin coordinates") 
+
+        vertical_wall_x = Square(self.__dim__, angles = [0, 0, 90]).__obj__
+        delta_y = np.array([0, self.__dim__[0], 0])
+        delta_x = np.array([self.__dim__[0], 0, 0])
+
+        #Pair of horizontal walls
+        horizontal_wall = Square(self.__dim__).__obj__
+        delta_z = np.array([0, 0, self.__dim__[0]])
+        h_walls = horizontal_wall
+        h_walls = np.vstack([h_walls, h_walls + delta_z])
+        
+        #Pair of vertical walls
+        v_walls = vertical_wall_x
+        v_walls = np.vstack([v_walls, vertical_wall_x + delta_y])
+
+        #To obtain all two pairs of parrarel walls we need to rotate
+        temp = v_walls
+        rot_oz = np.array([[0, 1, 0], [-1, 0, 0], [0, 0, 1]])
+        temp = np.dot(temp, rot_oz) + delta_x
+
+        v_walls = np.vstack([v_walls, temp])
+        self.__obj__  = v_walls
+        #self.__obj__ = np.vstack([h_walls, v_walls])
+
+
 class Donut(Shape):
     def __init__(self, dim, origin = np.array([0, 0, 0])):
         super().__init__(dim, origin)
     
     def draw(self):
-        #first dim is bigger radius R, second is small r
+        #first dim is the bigger radius R, the second one is the small r
         if len(self.__dim__) != 2: raise ValueError("ErrV5: Not enough data to draw figure")
         if self.__origin__.shape[0] != 3: raise ValueError("ErrV6: Invalid origin coordinates") 
 
@@ -92,4 +149,32 @@ class Donut(Shape):
         
         self.__obj__ = obj + self.__origin__
 
+class Sphere(Shape):
+    def __init__(self, dim, origin = np.array([0, 0, 0])):
+        super().__init__(dim, origin)
+
+    def draw(self):
+        #The one and only dimension is radius R
+        if len(self.__dim__) != 1: raise ValueError("ErrV5: Not enough data to draw figure")
+        if self.__origin__.shape[0] != 3: raise ValueError("ErrV6: Invalid origin coordinates") 
+
+        obj = None
+        dim = self.__dim__
+
+        for alpha in range(0, 360):
+            alpha = m.radians(alpha)
+
+            for beta in range(0, 90):
+                r = dim[0] * m.cos(beta)
+                z = dim[0] * m.sin(beta)
+                vec = np.array([r * m.cos(alpha), r * m.sin(alpha), z])
+
+                if obj is None:
+                    obj = vec
+                else:
+                    obj = np.vstack([obj, vec])
+                    obj = np.vstack([obj, -vec])
         
+        self.__obj__ = obj + self.__origin__
+
+            

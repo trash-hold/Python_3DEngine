@@ -48,10 +48,10 @@ class Renderer:
     def tk_print(self):
         render = ""
         for j in range(int(self.__size__[1])):
-            x = "|"
+            x = ""
             for i in range(int(self.__size__[0])):
                 x = x + " " + self.__map__[i, j]
-            render = render + x + "|" + "\n"
+            render = render + x + "" + "\n"
         #render = render + " " + "--" * int(self.__size__[0])
 
         self.__image__ = render

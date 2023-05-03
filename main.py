@@ -54,6 +54,7 @@ import gui as g
 if __name__ == "__main__":
     w = e.Window(60,60)
     c = e.Donut([300, 100])
+    #c = e.Sphere([300])
     w.update_obj(c.__obj__)
     g = g.GUI(w)
     #g.donut()

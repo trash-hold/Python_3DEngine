@@ -20,6 +20,7 @@ shadow_back = jet_black
 highlight_bg = light_green
 highlight_fg = light_gray
 
+display_style = ("DejaVu Sans Mono", 7)
 button_style = ("Terminal", 20)
 entry_style = ("Terminal", 20)
 label_style = ("Consolas", 7)
@@ -52,6 +53,17 @@ class MenuButton(tk.Button):
     def on_leave(self, event):
         self['bg'] = main_theme
         self['fg'] = background_theme
+
+class DisplayLabel(tk.Label):
+    def __init__(self, *args, **kwargs):
+        tk.Label.__init__(self, *args, **kwargs)
+        self['bg'] = shadow_back
+        self['fg'] = highlight_bg
+        self['font'] = display_style
+        self['justify'] = tk.CENTER
+        self['relief'] = tk.RIDGE
+        self['padx'] = 180
+        self['pady'] = 10
 
 class MenuLabel(tk.Label):
     def __init__(self, *args, **kwargs):
@@ -182,7 +194,7 @@ class ValueSetting(tk.Frame):
 def resize_info(font, win, big_label = False):
     default = 720 if big_label else 1080
     step = 50 if big_label else 200
-    print("New win: " + str(win))
+    #print("New win: " + str(win))
     min_height = 20 if big_label else 7
     #if big_label:
     if default >= win: return (font, min_height)

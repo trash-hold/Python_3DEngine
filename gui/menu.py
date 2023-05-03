@@ -2,23 +2,32 @@ from ctypes import alignment
 import tkinter as tk
 import gui.styles as s
 
+'''
+Menu class handles main menu and settings frame
+'''
 class Menu(tk.Frame):
     def __init__(self, gui):
         tk.Frame.__init__(self, gui.root)
         self.gui = gui
         self.root = gui.root
 
-        self.settings_frame()
+        self.menu_frame()
         self.bind("<Configure>", self.resize)
 
 
-    def menu_frame(self):
+    def menu_frame(self) -> None:
+        '''
+        Initializes menu frame
+        '''
+        #Sets up the geometry of frame
         self.reset()
         tk.Grid.rowconfigure(self, 0, weight = 4, minsize = 40)
         tk.Grid.rowconfigure(self, (1,2,3,4), weight = 1, minsize = 10)
+        tk.Grid.rowconfigure(self, 5, weight = 1, minsize = 30)
         tk.Grid.columnconfigure(self, 1, weight = 1, minsize = 80)
         tk.Grid.columnconfigure(self, (0, 2), weight = 1, minsize = 50)
-                                 
+
+        #Creating buttons and labels          
         l1 = s.MenuLabel(self, text = s.menu_banner)
 
         b1 = s.MenuButton(self, text = "Spin me!", command = self.gui.donut)
@@ -31,7 +40,8 @@ class Menu(tk.Frame):
 
         l1.grid(row = 0, column = 0, sticky = "NSWE", pady = (0, 80), columnspan = 3)
         #self.grid_rowconfigure(0, weight = 1)
-
+        
+        #Packing buttons into grid
         counter = 1
         for i in buttons:
             i.grid(row = counter, column = 1, sticky = "NSWE", pady = 10)
@@ -39,7 +49,10 @@ class Menu(tk.Frame):
             #self.grid_rowconfigure(counter, weight = 1)
             counter += 1
 
-    def settings_frame(self):
+    def settings_frame(self) -> None:
+        '''
+        Initializes settings frame
+        '''
         self.reset()
 
         top_frame = tk.Frame(self)
@@ -75,7 +88,10 @@ class Menu(tk.Frame):
         pass
 
     
-    def resize(self, event):
+    def resize(self, event) -> None:
+        '''
+        Handles resize operation when user changed window size
+        '''
         new_x = self.root.winfo_width() 
         new_y = self.root.winfo_height()
         
@@ -83,10 +99,13 @@ class Menu(tk.Frame):
         self.frame_resize(self, [new_x, new_y])
             
 
-    def frame_resize(self, frame, delta):
+    def frame_resize(self, frame: tk.Frame, delta: list()) -> None:
+        '''
+        Changes sizes of every button/label
+        '''
         i_info = None
         for i in frame.winfo_children():
-            print(type(i))
+            #print(type(i))
             if isinstance(i, (tk.Frame, s.OFButton, s.ValueSetting)): 
                 self.frame_resize(i, delta)
             else: 
@@ -100,13 +119,13 @@ class Menu(tk.Frame):
             #print("finished that widget")
         #print("finished everything")
 
-    def reset(self):
+    def reset(self) -> None:
+        '''
+        Cleans up frame
+        '''
         self.configure(bg = s.background_theme)
         for widget in self.winfo_children():
             widget.destroy()
-
+        
     def close_win(self):
         self.root.destroy()
-
-        
-
