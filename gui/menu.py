@@ -30,7 +30,7 @@ class Menu(tk.Frame):
         l1 = s.MenuLabel(self, text = s.menu_banner)
 
         b1 = s.MenuButton(self, text = "Spin me!", command=lambda: self.gui.change_frame('Animation'))
-        b2 = s.MenuButton(self, text = "Freemode", command = self.freemode_frame)
+        b2 = s.MenuButton(self, text = "Freemode", command=lambda: self.gui.change_frame('Freemode'))
         b3 = s.MenuButton(self, text = "Settings", command = self.settings_frame)
         b4 = s.MenuButton(self, text = "Exit", command = self.close_win)
 
@@ -84,10 +84,6 @@ class Menu(tk.Frame):
         top_frame.pack(side = tk.TOP, fill = tk.X)
         self.sett_frame.pack(fill = tk.Y, pady = 20, expand = False)
 
-    def freemode_frame(self):
-        pass
-
-    
     def resize(self, event) -> None:
         '''
         Handles resize operation when user changed window size

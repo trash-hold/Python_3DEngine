@@ -48,8 +48,8 @@ Day ???:
 
 Day ??? + few months:
     To do:
-        - Add widget menu to animation
-        - Add animation to styles
+        + Add widget menu to animation
+        + Add animation to styles
         - Add comments to all files:
             - GUI 
             - Menu
@@ -60,3 +60,5 @@ Day ??? + few months:
             - shapes
             - window
         - Reupload nice graphics instead of check off and on
+
+        - create own sliders

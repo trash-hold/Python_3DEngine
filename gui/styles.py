@@ -190,6 +190,34 @@ class ValueSetting(tk.Frame):
         for i in self.wid_active:
             i.configure(bg = background_theme)
 
+class Slider(tk.Scale):
+    def __init__(self, *args, **kwargs):
+        tk.Scale.__init__(self, *args, **kwargs)
+        self['bg'] = background_theme
+        self['fg'] = main_theme
+        self['troughcolor'] = main_theme
+        self['activebackground'] = shadow_main
+        self['font'] = button_style
+        #self['bd'] = 0
+        self['showvalue'] = 1
+        self['orient'] = tk.HORIZONTAL
+        self['relief'] = tk.FLAT
+        #self['highlightthickness'] = 0
+
+class SettingsSlider(tk.Frame):
+    def __init__(self, master, label, values, *args, **kwargs):
+        tk.Frame.__init__(self, master = master, *args, **kwargs)
+        self.slider = Slider(self, from_ = values[0], to = values[1])
+        lab = tk.Label(self, text = label, justify= tk.LEFT, font = button_style )
+        
+        self.slider.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 20), anchor = tk.SW)
+        lab.pack(side = tk.LEFT, padx = (20, 40), anchor = tk.SE)
+
+    def get_value(self) -> int:
+        return self.slider.get()
+    
+    def set_value(self, value: int):
+        self.slider.set(value = value)
     
 def resize_info(font, win, big_label = False):
     default = 720 if big_label else 1080

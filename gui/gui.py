@@ -5,6 +5,7 @@ from time import sleep
 from engine import *
 from gui.menu import Menu
 from gui.animation import Animation
+from gui.freemode import Freemode
 import gui.styles as s
 
 """
@@ -37,9 +38,8 @@ class GUI:
         self.root.wm_attributes("-transparentcolor", s.trans )
 
         #Packing main menu frame on init
-        self.frames = []
-        self.frames.append(Menu(self))
-        self.frames[0].pack(fill = tk.BOTH, expand = True)
+        #self.change_frame('Menu')
+        self.change_frame('Freemode')
 
         #self.root.bind('<Configure>', self.update_res)
 
@@ -48,7 +48,8 @@ class GUI:
     def change_frame(self, frame_name):
         frames = {
             'Menu': Menu,
-            'Animation': Animation
+            'Animation': Animation,
+            'Freemode': Freemode
         }
         self.reset_frame()
         frame_class = frames[frame_name]
