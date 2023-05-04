@@ -55,7 +55,7 @@ class Animation(tk.Frame):
         if ((self.counter < 360) and (self.stop == False)):
             ren.render()
             self.object_img.config(text = ren.__image__)
-            cam.cam_reset()
+            cam.update_cam(self.gui.win.__obj__)
             cam.rotate([0, -180 + self.counter, -180 + self.counter], True)
             self.counter += 1
             self.root.after(25, self.animation)

@@ -104,7 +104,9 @@ class Camera(Window, Shape):
         return max           
 
     def update_cam(self, obj = None, w_size = None):
-        if obj is not None: self.__obj__ = obj
+        if obj is not None: 
+            self.__obj__ = obj
+            self.__wcs__ = obj
         if w_size is None: w_size = self.__wsize__
 
     def cam_reset(self):

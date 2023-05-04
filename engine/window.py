@@ -52,6 +52,7 @@ class Window:
     def update_obj(self, obj):
         self.__obj__ = obj
 
+
     def get_obj(self):
         return self.__obj__
 

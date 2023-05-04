@@ -1,5 +1,6 @@
 import tkinter as tk
 import gui.styles as s
+import engine.shapes as sh
 
 class Freemode(tk.Frame):
     def __init__(self, gui):
@@ -23,7 +24,7 @@ class Freemode(tk.Frame):
 
         tk.Grid.rowconfigure(self, 0, weight = 0, minsize = 20)
         tk.Grid.rowconfigure(self, 1, weight = 4, minsize = 40)
-        tk.Grid.columnconfigure(self, 0, weight = 2, minsize = 80)
+        tk.Grid.columnconfigure(self, 0, weight = 2, minsize = 200)
         tk.Grid.columnconfigure(self, 1, weight = 6, minsize = 80)
 
         title_banner.grid(row = 0, column = 0, columnspan = 2, sticky = "NWE")
@@ -113,16 +114,9 @@ class FrameCreator():
         tk.Grid.columnconfigure(display_container, 1, weight = 0, minsize = 80)
 
         self.render_img = s.DisplayLabel(display_container, text = 'Render')
-        done_butt = s.MenuButton(display_container, text = 'Done')
+        done_butt = s.MenuButton(display_container, text = 'Done', command=lambda: self.parent.gui.change_frame('Animation'))
 
         self.settings_frame = tk.Frame(display_container, bg = 'red', padx = 10, pady = 20)
-        #slider1 = s.MenuButton(self.settings_frame, text = 'jebać misiuka')
-        #slider1 = s.Slider(master = self.settings_frame, from_ = 10, to = 100)
-        slider1 = s.SettingsSlider(master = self.settings_frame, label = 'Jebać misiuka', values = [10, 100])
-        slider2 = s.SettingsSlider(master = self.settings_frame, label = 'Jebać fabiana', values = [10, 200])
-
-        slider1.pack(side = tk.TOP, fill = tk.X, anchor = tk.N, pady = 20)
-        slider2.pack(side = tk.TOP, fill = tk.X, anchor = tk.N, pady = 20)
 
         self.render_img.grid(row = 0, column = 0, sticky = 'NSEW')
         self.settings_frame.grid(row = 0, column = 1, sticky = 'NSEW')
@@ -136,15 +130,17 @@ class FrameCreator():
                 widget.destroy()
         
         values = {}
+        obj_value = None
         
         if mode == 'Donut': 
             label1 = 'Radius R'
             min_max1 = [10, 400]
-            default_val1 = 300
+            default_val1 = 250
 
             label2 = 'Radius r'
             min_max2 = [0, 200]
-            default_val2 = 100
+            default_val2 = 80
+            obj_value = [default_val1, default_val2]
 
             slider_R = s.SettingsSlider(master = self.settings_frame, label = label1, values = min_max1)
             slider_R.set_value(default_val1)
@@ -163,15 +159,18 @@ class FrameCreator():
                 case 'Cube':
                     label = 'Length A'
                     min_max = [10, 300]
-                    default_val = 200
+                    default_val = 100
+                    obj_value = [default_val]
                 case 'Sphere':
                     label = 'Radius R'
-                    min_max = [10, 300]
-                    default_val = 200
+                    min_max = [10, 100]
+                    default_val = 50
+                    obj_value = [default_val]
                 case 'Circle':
                     label = 'Radius R'
                     min_max = [10, 400]
-                    default_val = 300
+                    default_val = 200
+                    obj_value = [default_val]
 
             slider = s.SettingsSlider(master = self.settings_frame, label = label, values = min_max)
             slider.set_value(default_val)
@@ -182,3 +181,26 @@ class FrameCreator():
 
         save_button = s.MenuButton(self.settings_frame, text = 'Save')
         save_button.pack(fill = tk.X, side = tk.BOTTOM, anchor = tk.S, pady = [0, 10], padx = 20)
+
+        self.update_render(mode, obj_value)
+
+    
+    def update_render(self, mode: str, value: list()):
+        shape = None
+        match mode:
+            case 'Donut':
+                shape = sh.Donut(value)
+                shape.rotate([0, 45, 45])
+            case 'Cube':
+                shape = sh.Cube(value)
+                shape.rotate([0, 45, 45])   
+            case 'Sphere':
+                shape = sh.Sphere(value)
+            case 'Circle':
+                shape = sh.Circle(value)
+                shape.rotate([0, 45, 45])
+
+        self.gui.cam.update_obj(shape.__obj__)
+        self.gui.win.update_obj(shape.__obj__)
+        self.gui.ren.render()
+        self.render_img.config(text = self.gui.ren.__image__)

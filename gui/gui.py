@@ -21,7 +21,7 @@ class GUI:
     def __init__(self, window):
         #Setting up engine
         self.win = window
-        self.cam = Camera(window)
+        self.cam = Camera(self.win)
         self.ren = Renderer(self.cam)
 
         #Initializing TK
