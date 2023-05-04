@@ -18,9 +18,9 @@ class Freemode(tk.Frame):
         self.reset()
 
         #Creating basic layout
-        title_banner = tk.Frame(self, bg = 'red')
-        left_panel = tk.Frame(self, bg = 'orange')
-        display = tk.Frame(self, bg = 'blue')
+        title_banner = tk.Frame(self, bg = s.dark_green)
+        left_panel = tk.Frame(self)
+        display = tk.Frame(self)
 
         tk.Grid.rowconfigure(self, 0, weight = 0, minsize = 20)
         tk.Grid.rowconfigure(self, 1, weight = 4, minsize = 40)
@@ -69,6 +69,9 @@ class FrameCreator():
         self.render_img = None
         self.settings_frame = None
 
+        self.val1 = tk.IntVar()
+        self.val2 = tk.IntVar()
+
     def title_banner_create(self, title_banner: tk.Frame) -> None:
         #Creating widgets
         sett = s.BigLabel(title_banner, text = "Settings")
@@ -86,37 +89,37 @@ class FrameCreator():
     
     def left_panel_create(self, left_panel: tk.Frame)-> None:
         #Creating smaller container for buttons
-        button_container = tk.Frame(left_panel, bg = 'green', pady = 40, padx = 20)
+        button_container = tk.Frame(left_panel, bg = s.dark_green, pady = 40, padx = 20)
         
         #Creating grid
-        tk.Grid.rowconfigure(button_container, (0, 1, 2, 3), weight = 1, minsize = 40)
-        tk.Grid.columnconfigure(button_container, 0, weight = 2, minsize = 80)
+        tk.Grid.rowconfigure(button_container, (0, 1, 2, 3), weight = 0, minsize = 40, pad = 40)
+        tk.Grid.columnconfigure(button_container, 0, weight = 1, minsize = 10)
         
         #Creating widgets
         donut_butt = s.MenuButton(button_container, text = 'Donut', command = lambda: self.parent.change_mode('Donut'))
-        sphere_butt = s.MenuButton(button_container, text = 'Sphere', command = lambda: self.parent.change_mode('Sphere'))
+        sphere_butt = s.MenuButton(button_container, text = 'Cut Sphere', command = lambda: self.parent.change_mode('Sphere'))
         cube_butt = s.MenuButton(button_container, text = 'Cube', command = lambda: self.parent.change_mode('Cube'))
         circle_butt = s.MenuButton(button_container, text = 'Circle', command = lambda: self.parent.change_mode('Circle'))
 
         #Packing buttons
         buttons = [donut_butt, sphere_butt, cube_butt, circle_butt]
         for i in range(0, len(buttons)):
-            buttons[i].grid(row = i, column = 0, sticky = "nesw", pady = [0, 20])
+            buttons[i].grid(row = i, column = 0, sticky = "new")
 
         #Packing container
         button_container.pack(fill = tk.BOTH, expand = True)
 
     def display_create(self, display: tk.Frame) -> None:
-        display_container = tk.Frame(display, bg = 'orange', padx = 20, pady = 30)
+        display_container = tk.Frame(display, padx = 40, pady = 40)
         tk.Grid.rowconfigure(display_container, 0, weight = 1, minsize = 20)
         tk.Grid.rowconfigure(display_container, 1, weight = 0, minsize = 40)
-        tk.Grid.columnconfigure(display_container, 0, weight = 1, minsize = 80)
-        tk.Grid.columnconfigure(display_container, 1, weight = 0, minsize = 80)
+        tk.Grid.columnconfigure(display_container, 0, weight = 1, minsize = 80, pad = 10)
+        tk.Grid.columnconfigure(display_container, 1, weight = 0, minsize = 80, pad = 10)
 
-        self.render_img = s.DisplayLabel(display_container, text = 'Render')
-        done_butt = s.MenuButton(display_container, text = 'Done', command=lambda: self.parent.gui.change_frame('Animation'))
+        self.render_img = s.DisplayLabel(display_container, text = 'Render', padx = 20)
+        done_butt = s.MenuButton(display_container, text = 'Spin me!', command=lambda: self.parent.gui.change_frame('Animation'))
 
-        self.settings_frame = tk.Frame(display_container, bg = 'red', padx = 10, pady = 20)
+        self.settings_frame = tk.Frame(display_container, bg = s.gray, padx = 20, pady = 20, bd = 2, relief = tk.RIDGE)
 
         self.render_img.grid(row = 0, column = 0, sticky = 'NSEW')
         self.settings_frame.grid(row = 0, column = 1, sticky = 'NSEW')
@@ -132,6 +135,11 @@ class FrameCreator():
         values = {}
         obj_value = None
         
+        title_label = s.BigLabel(self.settings_frame, text = 'Shape parameters', anchor = tk.N)
+        title_label.config(font = s.header, bg = s.gray)
+
+        title_label.pack(fill = tk.Y, side = tk.TOP)
+
         if mode == 'Donut': 
             label1 = 'Radius R'
             min_max1 = [10, 400]
@@ -142,11 +150,17 @@ class FrameCreator():
             default_val2 = 80
             obj_value = [default_val1, default_val2]
 
+            self.val1.set(default_val1)
+            self.val2.set(default_val2)
+
             slider_R = s.SettingsSlider(master = self.settings_frame, label = label1, values = min_max1)
             slider_R.set_value(default_val1)
 
             slider_r = s.SettingsSlider(master = self.settings_frame, label = label2, values = min_max2)
             slider_r.set_value(default_val2)
+
+            slider_R.slider.config(variable = self.val1, command = lambda value: self.update_render(mode, [int(value), self.val2.get()]))
+            slider_r.slider.config(variable = self.val2, command = lambda value: self.update_render(mode, [self.val1.get(), int(value)]))
 
             slider_R.pack(side = tk.TOP, fill = tk.X, anchor = tk.N, pady = 20)
             slider_r.pack(side = tk.TOP, fill = tk.X, anchor = tk.N, pady = 20)
@@ -158,34 +172,43 @@ class FrameCreator():
             match mode:
                 case 'Cube':
                     label = 'Length A'
-                    min_max = [10, 300]
-                    default_val = 100
+                    min_max = [10, 110]
+                    default_val = 50
                     obj_value = [default_val]
                 case 'Sphere':
                     label = 'Radius R'
-                    min_max = [10, 100]
+                    min_max = [10, 200]
                     default_val = 50
                     obj_value = [default_val]
                 case 'Circle':
                     label = 'Radius R'
-                    min_max = [10, 400]
-                    default_val = 200
+                    min_max = [10, 600]
+                    default_val = 300
                     obj_value = [default_val]
 
             slider = s.SettingsSlider(master = self.settings_frame, label = label, values = min_max)
+            slider.slider.config(variable = self.val1, command = lambda value: self.update_render(mode, [int(value)]))
             slider.set_value(default_val)
 
             slider.pack(side = tk.TOP, fill = tk.X, anchor = tk.N, pady = 20)
 
         else: raise NotImplementedError('GUIerr: Trying to invoke wrong settings_frame mode')
 
-        save_button = s.MenuButton(self.settings_frame, text = 'Save')
+        save_button = s.MenuButton(self.settings_frame, text = 'Save', command = lambda: self.update_values(mode = mode))
         save_button.pack(fill = tk.X, side = tk.BOTTOM, anchor = tk.S, pady = [0, 10], padx = 20)
 
         self.update_render(mode, obj_value)
 
-    
-    def update_render(self, mode: str, value: list()):
+    def update_values(self, mode: str, *args, **kwargs) -> None:
+        if mode == 'Donut':
+            val = [self.val1.get(), self.val2.get()]
+        else:
+            val = [self.val1.get()]
+
+        self.update_render(mode, val)
+            
+
+    def update_render(self, mode: str, value: list()) -> None:
         shape = None
         match mode:
             case 'Donut':
@@ -196,6 +219,7 @@ class FrameCreator():
                 shape.rotate([0, 45, 45])   
             case 'Sphere':
                 shape = sh.Sphere(value)
+                shape.rotate([0, 45, 45])
             case 'Circle':
                 shape = sh.Circle(value)
                 shape.rotate([0, 45, 45])

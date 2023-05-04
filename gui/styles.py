@@ -26,6 +26,7 @@ entry_style = ("Terminal", 20)
 label_style = ("Consolas", 7)
 setting_label = ("Terminal", 20)
 big_label = ("Terminal", 40)
+header = ("Terminal", 24)
 
 labels_height = [button_style, entry_style, setting_label, big_label]
 labels_width = [label_style]
@@ -193,28 +194,29 @@ class ValueSetting(tk.Frame):
 class Slider(tk.Scale):
     def __init__(self, *args, **kwargs):
         tk.Scale.__init__(self, *args, **kwargs)
-        self['bg'] = background_theme
+        self['bg'] = gray
         self['fg'] = main_theme
         self['troughcolor'] = main_theme
-        self['activebackground'] = shadow_main
         self['font'] = button_style
         #self['bd'] = 0
         self['showvalue'] = 1
         self['orient'] = tk.HORIZONTAL
         self['relief'] = tk.FLAT
-        #self['highlightthickness'] = 0
+        self['highlightthickness'] = 0
 
 class SettingsSlider(tk.Frame):
     def __init__(self, master, label, values, *args, **kwargs):
         tk.Frame.__init__(self, master = master, *args, **kwargs)
+        self['bg'] = gray
+        self['relief'] = tk.FLAT
         self.slider = Slider(self, from_ = values[0], to = values[1])
-        lab = tk.Label(self, text = label, justify= tk.LEFT, font = button_style )
+        lab = tk.Label(self, text = label, justify= tk.LEFT, font = button_style, bg = gray )
         
-        self.slider.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 20), anchor = tk.SW)
+        self.slider.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 20), anchor = tk.SW, expand = True)
         lab.pack(side = tk.LEFT, padx = (20, 40), anchor = tk.SE)
 
     def get_value(self) -> int:
-        return self.slider.get()
+        return int(self.slider.get())
     
     def set_value(self, value: int):
         self.slider.set(value = value)

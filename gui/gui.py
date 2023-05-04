@@ -29,7 +29,7 @@ class GUI:
 
         #Default GUI settings
         self.root.geometry("1080x720")
-        self.root.minsize(480, 640)
+        self.root.minsize(1280, 800)
         self.root.tk_setPalette(
             background = s.background_theme, 
             foreground = s.main_theme
@@ -39,7 +39,7 @@ class GUI:
 
         #Packing main menu frame on init
         #self.change_frame('Menu')
-        self.change_frame('Freemode')
+        self.change_frame('Menu')
 
         #self.root.bind('<Configure>', self.update_res)
 

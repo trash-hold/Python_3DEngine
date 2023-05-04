@@ -161,19 +161,19 @@ class Sphere(Shape):
         obj = None
         dim = self.__dim__
 
-        for alpha in range(0, 360):
+        for alpha in range(0, 360, 2):
             alpha = m.radians(alpha)
 
-            for beta in range(0, 90):
-                r = dim[0] * m.cos(beta)
-                z = dim[0] * m.sin(beta)
+            for beta in range(-90, 90, 2):
+                beta = m.radians(beta)
+                r = dim[0] * m.cos(beta/2)
+                z = dim[0] * m.sin(beta/2)
                 vec = np.array([r * m.cos(alpha), r * m.sin(alpha), z])
 
                 if obj is None:
                     obj = vec
                 else:
                     obj = np.vstack([obj, vec])
-                    obj = np.vstack([obj, -vec])
         
         self.__obj__ = obj + self.__origin__
 
