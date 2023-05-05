@@ -69,14 +69,20 @@ class Menu(tk.Frame):
         sett.pack(side = tk.RIGHT, fill = tk.BOTH, expand = True)
 
         #Creating settings_frame widgets
-        f_size = s.ValueSetting("Frame size", "60", self.sett_frame)
-        w_size = s.ValueSetting("Window size", "60", self.sett_frame)
-        butt = s.OFButton("test", True, self.sett_frame)
+        f_size = s.ValueSetting(master = self.sett_frame, label = "Frame size", entry = "60")
+        w_size = s.ValueSetting(master = self.sett_frame, label = "Window size", entry = "60")
+        tick = s.ValueSetting(master = self.sett_frame, label = "Tick duration", entry = "25", _min = 10, _max = 50)
+        adjust_butt = s.OFButton("Camera adjust", True, master = self.sett_frame)
+        center_butt = s.OFButton("Center", True, master = self.sett_frame)
+        zdepth_butt = s.OFButton("Z-depth reduction", False, master = self.sett_frame)
 
         #Packing settings_frame 
         f_size.pack(fill = tk.X, pady = 10)
         w_size.pack(fill = tk.X, pady = 10)
-        butt.pack(fill = tk.X, pady = 10)
+        tick.pack(fill = tk.X, pady = 10)
+        adjust_butt.pack(fill = tk.X, pady = 10)
+        center_butt.pack(fill = tk.X, pady = 10)
+        zdepth_butt.pack(fill = tk.X, pady = 10)
         
         #Packing into main frame
         top_frame.pack(side = tk.TOP, fill = tk.X)

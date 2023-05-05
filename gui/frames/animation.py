@@ -8,6 +8,7 @@ class Animation(tk.Frame):
             tk.Frame.__init__(self, gui.root)
             self.gui = gui
             self.root = gui.root
+
             self.stop = False
 
             self.animation_frame()
@@ -59,7 +60,7 @@ class Animation(tk.Frame):
             cam.update_cam(self.gui.win.__obj__)
             cam.rotate([0, -180 + self.counter, -180 + self.counter], True)
             self.counter += 1
-            self.root.after(25, self.animation)
+            self.root.after(self.gui.animation_step, self.animation)
 
     def reset_frame(self) -> None:
         self.configure(bg = s.background_theme)

@@ -1,4 +1,5 @@
 import tkinter as tk
+from PIL import Image, ImageTk
 
 '''
 Styles holds information about appearance of widgets (colour hexes etc) and keep custom widgets that inherit from tkinter
@@ -88,8 +89,18 @@ class OFButton(tk.Frame):
 
         #Setting up button variables
         self.mode = tk.BooleanVar(value = mode)
-        self.img_on = tk.PhotoImage(file = "gui/src/check_on.png")
-        self.img_off = tk.PhotoImage(file = "gui/src/check_off.png")
+        
+        #Loading images
+        open_imgOn = Image.open('gui/src/check_on.png')
+        open_imgOff = Image.open('gui/src/check_off.png')
+
+        width = 40
+        height = 40
+        open_imgOn = open_imgOn.resize((width, height), Image.ANTIALIAS)
+        open_imgOff = open_imgOff.resize((width, height), Image.ANTIALIAS)
+
+        self.img_on = ImageTk.PhotoImage(open_imgOn)
+        self.img_off = ImageTk.PhotoImage(open_imgOff)
         self.img = None
         
         if mode: self.img = self.img_on
@@ -97,16 +108,22 @@ class OFButton(tk.Frame):
 
         #Creating widgets
         self.b = tk.Button(self, image = self.img, command = self.switch, relief = tk.FLAT, activebackground = shadow_main)
-        label = tk.Label(self, text = label)
+        label = tk.Label(self, text = label, font = setting_label)
 
         #Packing widgets
-        self.b.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 40), pady = 10)
+        self.b.pack(side = tk.RIGHT, padx = (0, 40), pady = 10)
         label.pack(side = tk.LEFT, fill = tk.X, padx = (30, 150), pady = 20)
 
         #Highlighting while in focus
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
 
+    def get_value(self) -> bool:
+        '''
+        Returns the state of the button
+        '''
+        return self.mode.get()
+    
 
     def switch(self) -> None:
         '''
@@ -217,16 +234,18 @@ class ValueSetting(tk.Frame):
     '''
     Setting frame that consists of label, increment and decrement buttons, entry
     '''
-    def __init__(self, label = "Label text", entry = "Entry text", *args, **kwargs):
-        tk.Frame.__init__(self, *args, **kwargs)
-
+    def __init__(self, master, label, entry, _min = min_value, _max = max_value, *args, **kwargs):
+        tk.Frame.__init__(self, master = master, *args, **kwargs)
+        self.min = _min
+        self.max = _max
+        
         #Setting up entry
         self.var = tk.StringVar()
         self.default = entry 
         self.var.set(self.default)
 
         #Creating label
-        l = tk.Label(self, text = label)
+        l = tk.Label(self, text = label, font = setting_label)
 
         #Creating buttons
         button_frame = tk.Frame(self)
@@ -255,6 +274,15 @@ class ValueSetting(tk.Frame):
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
 
+
+    def get_value(self) -> int:
+        '''
+        Returns the value of the entry
+        '''
+        if self.check(self.ent.get()):
+            return int(self.var.get())
+        
+
     def increment(self, incr: bool = True) -> None:
         '''
         Changes value of entry
@@ -262,9 +290,9 @@ class ValueSetting(tk.Frame):
         inc = 10
         var_value = int(self.var.get())
         if incr: 
-            self.var.set(var_value + inc if var_value <= max_value - inc else max_value)
+            self.var.set(var_value + inc if var_value <= self.max - inc else self.max)
         else: 
-            self.var.set(var_value - inc if var_value >= min_value + inc else min_value)
+            self.var.set(var_value - inc if var_value >= self.min + inc else self.min)
 
     def check(self, input) -> bool:
         '''
@@ -272,7 +300,7 @@ class ValueSetting(tk.Frame):
         '''
         if input.isdigit():
             val = int(input)
-            if val <= max_value and val >= min_value and input[0] != "0":
+            if val <= self.max and val >= self.min and input[0] != "0":
                 return True
         return False
 
@@ -285,8 +313,8 @@ class ValueSetting(tk.Frame):
             if input[0] == 0: 
                 val = int(input.lstrip("0"))
 
-            if val > max_value: val = max_value
-            elif val < min_value: val = min_value
+            if val > self.max: val = self.max
+            elif val < self.min: val = self.min
         
         else: val = int(self.default)
 
@@ -311,11 +339,11 @@ class SettingsSlider(tk.Frame):
 
         #Creating widgets
         self.slider = Slider(self, from_ = values[0], to = values[1])
-        lab = tk.Label(self, text = label, justify= tk.LEFT, font = button_style, bg = gray )
+        lab = tk.Label(self, text = label, justify= tk.LEFT, font = setting_label, bg = gray )
 
         #Packing widgets
         self.slider.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 20), anchor = tk.SW, expand = True)
-        lab.pack(side = tk.LEFT, padx = (20, 40), anchor = tk.SE)
+        lab.pack(side = tk.LEFT, padx = (20, 40), anchor = tk.SE, fill = tk.X)
 
     def get_value(self) -> int:
         '''
