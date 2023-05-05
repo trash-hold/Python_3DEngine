@@ -1,12 +1,8 @@
-from os import rename
-import tkinter as tk
-from time import sleep
-
 from engine import *
-from gui.menu import Menu
-from gui.animation import Animation
-from gui.freemode import Freemode
-import gui.styles as s
+from lib.tkinter_lib import *
+from gui.frames.menu import Menu
+from gui.frames.animation import Animation
+from gui.frames.freemode import Freemode
 
 """
 Functions of GUI:
@@ -28,6 +24,7 @@ class GUI:
         self.root = tk.Tk()
 
         #Default GUI settings
+        self.root.title('Real Engine')
         self.root.geometry("1080x720")
         self.root.minsize(1280, 800)
         self.root.tk_setPalette(

@@ -1,5 +1,4 @@
-import tkinter as tk
-import gui.styles as s
+from lib.tkinter_lib import *
 import engine.shapes as sh
 
 class Freemode(tk.Frame):

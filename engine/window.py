@@ -2,6 +2,7 @@ from logging import raiseExceptions
 from lib.math_lib import np
 
 __frame_size__ = 100 
+
 class Window:
     def __init__(self, w_sizeX = 60, w_sizeY = 60, win_rules = ["center", "adjust"], shapes = None, obj = None, init = False):
         """
@@ -51,7 +52,6 @@ class Window:
     
     def update_obj(self, obj):
         self.__obj__ = obj
-
 
     def get_obj(self):
         return self.__obj__

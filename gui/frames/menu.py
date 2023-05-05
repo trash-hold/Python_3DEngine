@@ -1,6 +1,4 @@
-from ctypes import alignment
-import tkinter as tk
-import gui.styles as s
+from lib.tkinter_lib import *
 
 '''
 Menu class handles main menu and settings frame

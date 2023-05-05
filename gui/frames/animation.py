@@ -1,5 +1,4 @@
-import tkinter as tk
-import gui.styles as s
+from lib.tkinter_lib import *
 
 class Animation(tk.Frame):
     def __init__(self, gui):
