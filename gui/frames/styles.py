@@ -1,8 +1,17 @@
 import tkinter as tk
-#gotta do sth about those
+
+'''
+Styles holds information about appearance of widgets (colour hexes etc) and keep custom widgets that inherit from tkinter
+'''
+
+#Constants
 min_value = 20
 max_value = 1000
+#####################################################
 
+
+
+#Colours' hexes
 trans = "#B00B15"
 bloody_red = "#A42929"
 light_green = "#27BB73"
@@ -12,14 +21,22 @@ light_gray = "#4F4F4F"
 gray = "#424242"
 hacker_green = "#0D8E50"
 dark_green = "#066235"
+#####################################################
 
+
+
+#Themes
 main_theme = hacker_green
 background_theme = jet
 shadow_main = dark_green
 shadow_back = jet_black
 highlight_bg = light_green
 highlight_fg = light_gray
+#####################################################
 
+
+
+#Fonts
 display_style = ("DejaVu Sans Mono", 7)
 button_style = ("Terminal", 20)
 entry_style = ("Terminal", 20)
@@ -27,12 +44,15 @@ label_style = ("Consolas", 7)
 setting_label = ("Terminal", 20)
 big_label = ("Terminal", 40)
 header = ("Terminal", 24)
-
-labels_height = [button_style, entry_style, setting_label, big_label]
-labels_width = [label_style]
+#####################################################
 
 
+
+#Buttons
 class MenuButton(tk.Button):
+    '''
+    Button used throughout the code, mainly in main menu frame
+    '''
     def __init__(self, *args, **kwargs):
         tk.Button.__init__(self, *args, **kwargs)
         self['bg'] = main_theme
@@ -44,6 +64,7 @@ class MenuButton(tk.Button):
         self['activebackground'] = shadow_main
         self['activeforeground'] = shadow_back
 
+        #Binds for changing button colour while in focus
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
 
@@ -55,7 +76,69 @@ class MenuButton(tk.Button):
         self['bg'] = main_theme
         self['fg'] = background_theme
 
+
+
+
+class OFButton(tk.Frame):
+    '''
+    On/Off button with label
+    '''
+    def __init__(self, label = "Label", mode = True, *args, **kwargs):
+        tk.Frame.__init__(self, *args, **kwargs)
+
+        #Setting up button variables
+        self.mode = tk.BooleanVar(value = mode)
+        self.img_on = tk.PhotoImage(file = "gui/src/check_on.png")
+        self.img_off = tk.PhotoImage(file = "gui/src/check_off.png")
+        self.img = None
+        
+        if mode: self.img = self.img_on
+        else: self.img = self.img_off
+
+        #Creating widgets
+        self.b = tk.Button(self, image = self.img, command = self.switch, relief = tk.FLAT, activebackground = shadow_main)
+        label = tk.Label(self, text = label)
+
+        #Packing widgets
+        self.b.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 40), pady = 10)
+        label.pack(side = tk.LEFT, fill = tk.X, padx = (30, 150), pady = 20)
+
+        #Highlighting while in focus
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+
+
+    def switch(self) -> None:
+        '''
+        Changes (bool) value and image of button
+        '''
+        if self.mode.get():
+            self.b.configure(image = self.img_off)
+            self.mode.set(False)
+        else:
+            self.b.configure(image = self.img_on)
+            self.mode.set(True)
+
+    def on_enter(self, event) -> None:
+        for i in self.winfo_children():
+            i.configure(bg = gray)
+        self.configure(bg = gray)
+    
+    def on_leave(self, event) -> None:
+        for i in self.winfo_children():
+            i.configure(bg = background_theme)
+        self.configure(bg = background_theme)
+
+
+############################################################################################
+
+
+
+#Labels
 class DisplayLabel(tk.Label):
+    '''
+    Used to display rendered image
+    '''
     def __init__(self, *args, **kwargs):
         tk.Label.__init__(self, *args, **kwargs)
         self['bg'] = shadow_back
@@ -66,19 +149,38 @@ class DisplayLabel(tk.Label):
         self['padx'] = 180
         self['pady'] = 10
 
+
+
 class MenuLabel(tk.Label):
+    '''
+    Used to display title in main_menu
+    '''
     def __init__(self, *args, **kwargs):
         tk.Label.__init__(self, *args, **kwargs)
         self['font'] = label_style
         self['justify'] = tk.LEFT
 
+
+
 class BigLabel(tk.Label):
+    '''
+    Used to display headers
+    '''
     def __init__(self, *args, **kwargs):
         tk.Label.__init__(self, *args, **kwargs)
         self['font'] = big_label
         self['justify'] = tk.CENTER
 
+
+############################################################################################
+
+
+
+#Other widgets
 class SettEntry(tk.Entry):
+    '''
+    Entry widget used in settings frame
+    '''
     def __init__(self, *args, **kwargs):
         tk.Entry.__init__(self, *args, **kwargs)
         self['bg'] = shadow_main
@@ -88,91 +190,96 @@ class SettEntry(tk.Entry):
         self['justify'] = tk.CENTER
         self['relief'] = tk.FLAT
 
-class OFButton(tk.Frame):
-    def __init__(self, label = "Label", mode = True, *args, **kwargs):
-        tk.Frame.__init__(self, *args, **kwargs)
-        self.mode = tk.BooleanVar(value = mode)
-        self.img_on = tk.PhotoImage(file = "gui/src/check_on.png")
-        self.img_off = tk.PhotoImage(file = "gui/src/check_off.png")
-        self.img = None
-        
-        if mode: self.img = self.img_on
-        else: self.img = self.img_off
-
-        self.b = tk.Button(self, image = self.img, command = self.switch, relief = tk.FLAT, activebackground = shadow_main)
-        l = tk.Label(self, text = label)
-
-        self.b.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 40), pady = 10)
-        l.pack(side = tk.LEFT, fill = tk.X, padx = (30, 150), pady = 20)
-
-        self.bind("<Enter>", self.on_enter)
-        self.bind("<Leave>", self.on_leave)
 
 
-    def switch(self):
-        if self.mode.get():
-            self.b.configure(image = self.img_off)
-            self.mode.set(False)
-        else:
-            self.b.configure(image = self.img_on)
-            self.mode.set(True)
+class Slider(tk.Scale):
+    '''
+    Slider used in freemode frame's control panel
+    '''
+    def __init__(self, *args, **kwargs):
+        tk.Scale.__init__(self, *args, **kwargs)
+        self['bg'] = gray
+        self['fg'] = main_theme
+        self['troughcolor'] = main_theme
+        self['font'] = button_style
+        self['showvalue'] = 1
+        self['orient'] = tk.HORIZONTAL
+        self['relief'] = tk.FLAT
+        self['highlightthickness'] = 0
 
-    def on_enter(self, event):
-        for i in self.winfo_children():
-            i.configure(bg = gray)
-        self.configure(bg = gray)
-    
-    def on_leave(self, event):
-        for i in self.winfo_children():
-            i.configure(bg = background_theme)
-        self.configure(bg = background_theme)
+############################################################################################
 
 
 
+
+#Frames
 class ValueSetting(tk.Frame):
+    '''
+    Setting frame that consists of label, increment and decrement buttons, entry
+    '''
     def __init__(self, label = "Label text", entry = "Entry text", *args, **kwargs):
         tk.Frame.__init__(self, *args, **kwargs)
+
+        #Setting up entry
         self.var = tk.StringVar()
         self.default = entry 
         self.var.set(self.default)
 
+        #Creating label
         l = tk.Label(self, text = label)
-        #l.configure(font = setting_label)
+
+        #Creating buttons
         button_frame = tk.Frame(self)
+        b1 = MenuButton(button_frame, text = "-", command = lambda: self.increment(False))
+        b2 = MenuButton(button_frame, text = "+", command = lambda: self.increment())
+
+        #Helper list
         self.wid_active = [l, button_frame, self]
 
+        #Creating entry
         self.ent = SettEntry(button_frame, textvariable = self.var)
         vcm = self.register(self.check)
         ivcm = self.register(self.failed_check)
         self.ent.config(validate = "key", validatecommand = (vcm, "%P")) 
 
-        b1 = MenuButton(button_frame, text = "-", command = lambda: self.increment(False))
-        b2 = MenuButton(button_frame, text = "+", command = lambda: self.increment())
-
+        #Packing widgets
         widgets = [b1, self.ent, b2]
         for i in widgets:
             i.pack(side = tk.LEFT, padx = (0, 0), fill = tk.Y, pady = 20)
 
+        #Packing frames
         button_frame.pack(side = tk.RIGHT, padx = (0, 15))
         l.pack(side = tk.LEFT, fill = tk.BOTH, padx = (30, 150))
 
+        #Highlighting frame while in focus 
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
 
-    def increment(self, incr = True):
+    def increment(self, incr: bool = True) -> None:
+        '''
+        Changes value of entry
+        '''
         inc = 10
         var_value = int(self.var.get())
-        if incr: self.var.set(var_value + inc if var_value <= max_value - inc else max_value)
-        else: self.var.set(var_value - inc if var_value >= min_value + inc else min_value)
+        if incr: 
+            self.var.set(var_value + inc if var_value <= max_value - inc else max_value)
+        else: 
+            self.var.set(var_value - inc if var_value >= min_value + inc else min_value)
 
-    def check(self, input):
+    def check(self, input) -> bool:
+        '''
+        Validates user input
+        '''
         if input.isdigit():
             val = int(input)
             if val <= max_value and val >= min_value and input[0] != "0":
                 return True
         return False
 
-    def failed_check(self, input):
+    def failed_check(self, input) -> None:
+        '''
+        Handles failed check
+        '''
         if input.isdigit():
             val = int(input)
             if input[0] == 0: 
@@ -191,45 +298,52 @@ class ValueSetting(tk.Frame):
         for i in self.wid_active:
             i.configure(bg = background_theme)
 
-class Slider(tk.Scale):
-    def __init__(self, *args, **kwargs):
-        tk.Scale.__init__(self, *args, **kwargs)
-        self['bg'] = gray
-        self['fg'] = main_theme
-        self['troughcolor'] = main_theme
-        self['font'] = button_style
-        #self['bd'] = 0
-        self['showvalue'] = 1
-        self['orient'] = tk.HORIZONTAL
-        self['relief'] = tk.FLAT
-        self['highlightthickness'] = 0
+
+
 
 class SettingsSlider(tk.Frame):
+    '''
+    Setting slider, consists of label and slider
+    '''
     def __init__(self, master, label, values, *args, **kwargs):
         tk.Frame.__init__(self, master = master, *args, **kwargs)
-        self['bg'] = gray
-        self['relief'] = tk.FLAT
+        self.config(bg = gray, relief = tk.FLAT)
+
+        #Creating widgets
         self.slider = Slider(self, from_ = values[0], to = values[1])
         lab = tk.Label(self, text = label, justify= tk.LEFT, font = button_style, bg = gray )
-        
+
+        #Packing widgets
         self.slider.pack(side = tk.RIGHT, fill = tk.Y, padx = (0, 20), anchor = tk.SW, expand = True)
         lab.pack(side = tk.LEFT, padx = (20, 40), anchor = tk.SE)
 
     def get_value(self) -> int:
+        '''
+        Returns the value of slider
+        '''
         return int(self.slider.get())
     
     def set_value(self, value: int):
+        '''
+        Sets slider to given value
+        '''
         self.slider.set(value = value)
     
-def resize_info(font, win, big_label = False):
+############################################################################################
+
+
+
+
+#Helper functions
+def resize_info(font, win, big_label = False) -> tuple:
+    '''
+    Return appropriate tuple (font, font_size) for given window size 
+    '''
     default = 720 if big_label else 1080
     step = 50 if big_label else 200
-    #print("New win: " + str(win))
     min_height = 20 if big_label else 7
-    #if big_label:
     if default >= win: return (font, min_height)
     else:
-        print(min_height + (win - default) // step)
         return (font, min_height + (win - default) // step)
 
 menu_banner = """                                                                                                                                                                             
