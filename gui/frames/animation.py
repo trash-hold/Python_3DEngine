@@ -48,19 +48,24 @@ class Animation(tk.Frame):
 
 
 
-    def animation(self) -> None:
+    def animation(self, constant = True) -> None:
         '''
         Pre-programmed animation
         '''
         ren = self.gui.ren
         cam = self.gui.cam
-        if ((self.counter < 360) and (self.stop == False)):
-            ren.render()
-            self.object_img.config(text = ren.__image__)
-            cam.update_cam(self.gui.win.__obj__)
-            cam.rotate([0, -180 + self.counter, -180 + self.counter], True)
-            self.counter += 1
-            self.root.after(self.gui.animation_step, self.animation)
+        if self.stop == False:
+            if (self.counter < 360):
+                ren.render()
+                self.object_img.config(text = ren.__image__)
+                cam.update_cam(self.gui.win.__obj__)
+                cam.rotate([0, -90 + self.counter, 0], True)
+                self.counter += 1
+                self.root.after(self.gui.animation_step, self.animation)
+            elif constant:
+                #For neverending loop
+                self.counter = 0
+                self.root.after(self.gui.animation_step, self.animation)
 
     def reset_frame(self) -> None:
         self.configure(bg = s.background_theme)

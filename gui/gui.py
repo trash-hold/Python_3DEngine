@@ -16,7 +16,7 @@ class GUI:
         self.win = window
         self.cam = Camera(self.win)
         self.ren = Renderer(self.cam)
-        self.animation_step = 25
+        self.animation_step = 10
 
         #Initializing TK
         self.root = tk.Tk()
