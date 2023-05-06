@@ -5,13 +5,16 @@
 
 ## Brief presentation
 Here is how the Real Engine looks in action
-![Donut gif](documentation/gifs/donut_looped.gif)
+
+<img src="documentation/gifs/donut_looped.gif" width="40%" height="40%"/>
 
 You can observe how the object seems to come closer and further, it's a result of camera settings that you can read about in the [**engine overview**](#engine-overview) section.
 
 
 To give a taste of what other functionalities hide inside the engine you can see the freemode menu in use
-![Freemode frame gif](documentation/gifs/freemode_pres.gif)
+
+<img src="/documentation/gifs/freemode_pres.gif" width="40%" height="40%"/>
+
 But because all of the fun lays in using the app yourself I encourage you to visit [requirements](#requirements) and try it out!
 
 ## Future developement
